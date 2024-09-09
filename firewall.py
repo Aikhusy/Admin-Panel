@@ -73,6 +73,11 @@ def delete_firewall(fw_id):
         try:
             current_time = datetime.now()
             cursor.execute("UPDATE tbl_m_firewall SET deleted_at = ? WHERE id = ?", (current_time, fw_id))
+            
+            conn.commit()
+
+            cursor.execute("update tbl_r_firewall_login SET deleted_at = ? WHERE fk_m_firewall = ?",(current_time, fw_id))
+
             conn.commit()
             conn.close()
             messagebox.showinfo("Success", "Firewall berhasil dihapus!")
@@ -87,7 +92,7 @@ def load_firewall_login_data():
     if conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT tbl_m_firewall.fw_name, tbl_r_firewall_login.fw_ip_address, 
+            SELECT tbl_r_firewall_login.id,tbl_m_firewall.fw_name, tbl_r_firewall_login.fw_ip_address, 
                    tbl_r_firewall_login.fw_username 
             FROM tbl_r_firewall_login 
             JOIN tbl_m_firewall ON tbl_r_firewall_login.fk_m_firewall = tbl_m_firewall.id 
@@ -95,5 +100,23 @@ def load_firewall_login_data():
         """)
         rows = cursor.fetchall()
         conn.close()
-        return [(str(row[0]), row[1], row[2]) for row in rows]
+        return [(str(row[0]), row[1], row[2],row[3]) for row in rows]
     return []
+
+def delete_firewall_login(fw_id):
+
+    print (fw_id)
+    conn = connect_db()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            current_time = datetime.now()
+            cursor.execute("UPDATE tbl_r_firewall_login SET deleted_at = ? WHERE id = ?", (current_time, fw_id))
+            conn.commit()
+            conn.close()
+            messagebox.showinfo("Success", "Firewall berhasil dihapus!")
+        except Exception as e:
+            conn.rollback()
+            messagebox.showerror("Error", f"Error saat menghapus firewall: {e}")
+    else:
+        messagebox.showerror("Database Error", "Koneksi ke database gagal.")
