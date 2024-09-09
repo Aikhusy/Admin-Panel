@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from firewall import save_firewall_login, load_firewall_ids, save_firewall, load_firewall_data, delete_firewall
+from firewall import save_firewall_login, load_firewall_ids, save_firewall, load_firewall_data, delete_firewall,load_firewall_login_data
 
 def refresh_firewall_dropdown():
     firewalls = load_firewall_ids()
@@ -18,6 +18,19 @@ def refresh_firewall_table():
     for row in rows:
         firewall_treeview.insert("", tk.END, values=row)
 
+def refresh_firewall_login_dropdown():
+    login_data = load_firewall_login_data()
+    fw_login_combobox['values'] = [f"{data[0]} - {data[1]} - {data[2]} - {data[3]}" for data in login_data]
+
+def refresh_firewall_login_table():
+    rows = load_firewall_login_data()
+    print ('rows = ',rows)
+    for item in firewall_login_treeview.get_children():
+        firewall_login_treeview.delete(item)
+    for row in rows:
+        firewall_login_treeview.insert("", tk.END, values=row)
+    print(firewall_login_treeview)
+
 # Fungsi untuk menyimpan data login firewall
 def save_firewall_login_action():
     fk_m_firewall = fk_m_firewall_combobox.get().split(' ')[0]  # Ambil hanya ID firewall
@@ -27,7 +40,8 @@ def save_firewall_login_action():
     fw_expert_password = fw_expert_password_entry.get()
 
     save_firewall_login(fk_m_firewall, fw_ip_address, fw_username, fw_password, fw_expert_password)
-    refresh_firewall_dropdown()  # Refresh dropdown setelah menyimpan
+    refresh_firewall_dropdown()
+    refresh_firewall_login_table()  # Refresh dropdown setelah menyimpan
 
 # Fungsi untuk menyimpan data firewall
 def save_firewall_action():
@@ -39,6 +53,7 @@ def save_firewall_action():
     save_firewall(fw_name, fw_location, fw_site, fk_fw_pair)
     refresh_firewall_table()  # Refresh tabel setelah menyimpan
     refresh_firewall_dropdown()  # Refresh dropdown setelah menyimpan
+    refresh_firewall_login_table()
 
 # Fungsi untuk menghapus firewall
 def delete_firewall_action():
@@ -50,7 +65,8 @@ def delete_firewall_action():
         confirm = messagebox.askyesno("Confirm Delete", "Apakah Anda yakin ingin menghapus firewall ini?")
         if confirm:
             delete_firewall(fw_id)
-            refresh_firewall_table()  # Refresh data setelah penghapusan
+            refresh_firewall_table()
+            refresh_firewall_login_table()  # Refresh data setelah penghapusan
     else:
         messagebox.showwarning("No Selection", "Pilih firewall yang ingin dihapus.")
 
@@ -105,7 +121,7 @@ tk.Label(fw_login_panel, text="Firewall").grid(row=0, column=0)
 
 # Ambil firewall IDs dari tabel tbl_m_firewall
 firewalls = load_firewall_ids()
-
+firewalls_login = load_firewall_login_data()
 # Buat Combobox dengan pilihan firewall IDs
 fk_m_firewall_combobox = ttk.Combobox(fw_login_panel, state="readonly")
 fk_m_firewall_combobox['values'] = [f"{fw[0]} - {fw[1]}" for fw in firewalls]
@@ -134,9 +150,21 @@ button_frame.grid(row=5, column=0, columnspan=2, pady=10)
 tk.Button(button_frame, text="Save Firewall Login", command=save_firewall_login_action).pack(side=tk.LEFT, padx=5)
 tk.Button(button_frame, text="Clear", command=clear_fw_login_panel).pack(side=tk.LEFT, padx=5)
 
+#=============================================================================
+fw_login_data_panel = tk.LabelFrame(content_frame, text="FIREWALL LOGIN DATA", padx=10, pady=10)
+fw_login_data_panel.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
+columns = ("Name", "Ip Addr", "Username")
+firewall_login_treeview = ttk.Treeview(fw_login_data_panel, columns=columns, show="headings")
+for col in columns:
+    firewall_login_treeview.heading(col, text=col)
+
+firewall_login_treeview.pack(fill="both", expand="yes")
+
+
+#=============================================================================
 # Panel untuk tbl_m_firewall (Tambah Firewall)
 fw_panel = tk.LabelFrame(content_frame, text="Add New Firewall", padx=10, pady=10)
-fw_panel.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
+fw_panel.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
 
 tk.Label(fw_panel, text="Firewall Name").grid(row=0, column=0)
 fw_name_entry = tk.Entry(fw_panel)
@@ -161,9 +189,11 @@ button_frame_fw.grid(row=4, column=0, columnspan=2, pady=10)
 tk.Button(button_frame_fw, text="Save Firewall", command=save_firewall_action).pack(side=tk.LEFT, padx=5)
 tk.Button(button_frame_fw, text="Clear", command=clear_fw_panel).pack(side=tk.LEFT, padx=5)
 
+#=============================================================================
+
 # Panel untuk menampilkan data Firewall (tbl_m_firewall)
 firewall_data_panel = tk.LabelFrame(content_frame, text="Firewall Data", padx=10, pady=10)
-firewall_data_panel.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
+firewall_data_panel.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
 
 columns = ("id", "Name", "Location", "Site", "Pair ID")
 firewall_treeview = ttk.Treeview(firewall_data_panel, columns=columns, show="headings")
@@ -176,5 +206,6 @@ tk.Button(firewall_data_panel, text="Delete Firewall", command=delete_firewall_a
 
 # Refresh data awal
 refresh_firewall_table()
+refresh_firewall_login_table()
 
 root.mainloop()

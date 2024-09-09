@@ -81,3 +81,19 @@ def delete_firewall(fw_id):
             messagebox.showerror("Error", f"Error saat menghapus firewall: {e}")
     else:
         messagebox.showerror("Database Error", "Koneksi ke database gagal.")
+
+def load_firewall_login_data():
+    conn = connect_db()
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT tbl_m_firewall.fw_name, tbl_r_firewall_login.fw_ip_address, 
+                   tbl_r_firewall_login.fw_username 
+            FROM tbl_r_firewall_login 
+            JOIN tbl_m_firewall ON tbl_r_firewall_login.fk_m_firewall = tbl_m_firewall.id 
+            WHERE tbl_r_firewall_login.deleted_at IS NULL
+        """)
+        rows = cursor.fetchall()
+        conn.close()
+        return [(str(row[0]), row[1], row[2]) for row in rows]
+    return []
