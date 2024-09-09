@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from firewall import save_firewall_login, load_firewall_ids, save_firewall, load_firewall_data, delete_firewall,load_firewall_login_data,delete_firewall_login
+from Firewall import save_firewall_login, load_firewall_ids, save_firewall, load_firewall_data, delete_firewall,load_firewall_login_data,delete_firewall_login
 
 def refresh_firewall_dropdown():
     firewalls = load_firewall_ids()
@@ -21,12 +21,10 @@ def refresh_firewall_table():
 
 def refresh_firewall_login_table():
     rows = load_firewall_login_data()
-    print ('rows = ',rows)
     for item in firewall_login_treeview.get_children():
         firewall_login_treeview.delete(item)
     for row in rows:
         firewall_login_treeview.insert("", tk.END, values=row)
-    print(firewall_login_treeview)
 
 # Fungsi untuk menyimpan data login firewall
 def save_firewall_login_action():

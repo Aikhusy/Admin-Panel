@@ -1,7 +1,7 @@
-from conn import connect_db
+from Conn import connect_db
 from tkinter import messagebox
-from encrypt import encrypt_password
-from validation import validate_ip
+from Encrypt import encrypt_password
+from Validation import validate_ip
 from datetime import datetime
 from JsonConfig import get_json_config
 
@@ -66,7 +66,6 @@ def load_firewall_data():
     return []
 
 def delete_firewall(fw_id):
-    print (fw_id)
     conn = connect_db()
     if conn:
         cursor = conn.cursor()
@@ -116,7 +115,6 @@ def load_firewall_login_data():
 
 def delete_firewall_login(fw_id):
 
-    print (fw_id)
     conn = connect_db()
     if conn:
         cursor = conn.cursor()
