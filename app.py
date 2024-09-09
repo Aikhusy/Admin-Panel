@@ -38,7 +38,8 @@ def save_firewall_login_action():
 
     save_firewall_login(fk_m_firewall, fw_ip_address, fw_username, fw_password, fw_expert_password)
     refresh_firewall_dropdown()
-    refresh_firewall_login_table()  # Refresh dropdown setelah menyimpan
+    refresh_firewall_login_table()
+    refresh_firewall_dropdown()  # Refresh dropdown setelah menyimpan
 
 # Fungsi untuk menyimpan data firewall
 def save_firewall_action():
@@ -63,7 +64,8 @@ def delete_firewall_action():
         if confirm:
             delete_firewall(fw_id)
             refresh_firewall_table()
-            refresh_firewall_login_table()  # Refresh data setelah penghapusan
+            refresh_firewall_login_table()
+            refresh_firewall_dropdown()  # Refresh data setelah penghapusan
     else:
         messagebox.showwarning("No Selection", "Pilih firewall yang ingin dihapus.")
 
@@ -78,7 +80,8 @@ def delete_firewall_login_info():
         if confirm:
             delete_firewall_login(fw_id)
             refresh_firewall_table()
-            refresh_firewall_login_table()  # Refresh data setelah penghapusan
+            refresh_firewall_login_table()
+            refresh_firewall_dropdown()  # Refresh data setelah penghapusan
     else:
         messagebox.showwarning("No Selection", "Pilih firewall yang ingin dihapus.")
 
@@ -100,7 +103,7 @@ def clear_fw_panel():
 #=============================================================================
 # Membuat GUI utama
 root = tk.Tk()
-root.title("Firewall Management")
+root.title("Firewall Ip Management")
 root.geometry("800x700")
 
 # Frame utama untuk canvas dan scrollbar
